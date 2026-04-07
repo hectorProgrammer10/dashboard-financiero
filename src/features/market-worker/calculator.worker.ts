@@ -28,10 +28,7 @@ self.onmessage = (event: MessageEvent<CalculateMessage>) => {
 
   if (type === 'CALCULATE_SMA') {
     const { data } = payload;
-    
-    // Simulate some latency for dramatic effect if data is too small (demonstration purposes)
-    // or just calculate immediately since thousands of points takes some time natively
-    
+
     const processedPoints = data.map((point, idx) => {
       return {
         ...point,

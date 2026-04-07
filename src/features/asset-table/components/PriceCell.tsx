@@ -1,63 +1,87 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useMarketStore } from '../../../shared/store/useMarketStore';
+
+// Single Intl instance — avoids recreating formatter on every render
+const priceFormatter = new Intl.NumberFormat(undefined, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 6,
+});
 
 interface PriceCellProps {
   symbol: string;
   initialValue: number;
 }
 
-export const PriceCell: React.FC<PriceCellProps> = ({ symbol, initialValue }) => {
-  const selectedSymbol = useMarketStore((state) => state.selectedSymbol);
-  const liveData = useMarketStore((state) => state.liveData);
-  
-  // If this symbol is selected and we have live WS data, use it. Otherwise static via REST
-  const displayValue = (selectedSymbol === symbol && liveData.lastPrice) 
-                        ? parseFloat(liveData.lastPrice) 
-                        : initialValue;
+// Only the PriceCell for the SELECTED symbol reads liveData from the store.
+// All other cells use their stable initialValue and never re-render on WS ticks.
+const PriceCellInner: React.FC<PriceCellProps> = ({ symbol, initialValue }) => {
+  // Granular selectors — Zustand notifies this component only if its slice changed
+  const isSelected = useMarketStore((state) => state.selectedSymbol === symbol);
+  const livePrice = useMarketStore((state) =>
+    state.selectedSymbol === symbol ? state.liveData.lastPrice : null
+  );
 
-  const previousValue = useRef(displayValue);
+  // Use live WS price only for the selected symbol; otherwise use the stable REST value
+  const displayValue = isSelected && livePrice ? parseFloat(livePrice) : initialValue;
+
+  // React-recommended pattern for "adjusting state when a prop changes":
+  // compare prev vs current during render and call setState directly — React
+  const [prevDisplayValue, setPrevDisplayValue] = useState(displayValue);
   const [flash, setFlash] = useState<'up' | 'down' | 'none'>('none');
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  if (displayValue !== prevDisplayValue) {
+    setPrevDisplayValue(displayValue);
+    setFlash(displayValue > prevDisplayValue ? 'up' : 'down');
+  }
+
+  // Only use the effect for the async reset (setState called inside a callback, not in the body)
   useEffect(() => {
-    if (displayValue > previousValue.current) {
-      setFlash('up');
-    } else if (displayValue < previousValue.current) {
-      setFlash('down');
-    }
-    
-    previousValue.current = displayValue;
+    if (flash === 'none') return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setFlash('none'), 350);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [flash]);
 
-    if (flash !== 'none') {
-      const timer = setTimeout(() => setFlash('none'), 300); // 300ms flash duration
-      return () => clearTimeout(timer);
-    }
-  }, [displayValue, flash]);
+  // CSS flash — no Framer Motion loop overhead
+  const bgColor =
+    flash === 'up'
+      ? 'rgba(16, 185, 129, 0.2)'
+      : flash === 'down'
+      ? 'rgba(244, 63, 94, 0.2)'
+      : 'transparent';
 
-  const getBackgroundColor = () => {
-    if (flash === 'up') return 'rgba(16, 185, 129, 0.2)'; // Emerald
-    if (flash === 'down') return 'rgba(244, 63, 94, 0.2)'; // Rose
-    return 'transparent';
-  };
-
-  const getTextColor = () => {
-    if (flash === 'up') return '#34d399';
-    if (flash === 'down') return '#fb7185';
-    return '#f8fafc'; // Default
-  };
+  const textColor =
+    flash === 'up'
+      ? '#34d399'
+      : flash === 'down'
+      ? '#fb7185'
+      : '#f8fafc';
 
   return (
-    <motion.div
-      initial={false}
-      animate={{ backgroundColor: getBackgroundColor() }}
-      transition={{ duration: 0.3 }}
-      className="px-3 py-1.5 rounded w-full flex justify-end transition-colors"
+    <div
+      className="px-3 py-1.5 rounded w-full flex justify-end"
+      style={{
+        backgroundColor: bgColor,
+        transition: 'background-color 350ms ease',
+      }}
     >
-      <span className="font-mono text-[15px]" style={{ color: getTextColor(), transition: 'color 300ms ease' }}>
-        ${displayValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+      <span
+        className="font-mono text-[15px]"
+        style={{ color: textColor, transition: 'color 350ms ease' }}
+      >
+        ${priceFormatter.format(displayValue)}
       </span>
-    </motion.div>
+    </div>
   );
 };
+
+// React.memo prevents re-render when parent re-renders but props haven't changed.
+// The Zustand selector inside handles live data independently.
+export const PriceCell = React.memo(PriceCellInner, (prev, next) => {
+  return prev.symbol === next.symbol && prev.initialValue === next.initialValue;
+});

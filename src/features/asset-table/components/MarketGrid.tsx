@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import useSWR from 'swr';
 import { fetchTickers } from '../../../shared/api/mexc';
 import { ApiErrorScreen } from '../../../shared/components/ApiErrorScreen';
@@ -10,6 +10,31 @@ import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NewsCarousel } from '../../news/components/NewsCarousel';
 
 const ITEMS_PER_PAGE = 20;
+
+// Single Intl instances — avoids inline object allocation on every render × row
+const marketCapFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+const volumeFormatter    = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+
+// Pre-computes and caches supply per symbol — never recalculates on re-render
+const supplyCache = new Map<string, number>();
+const getSupply = (symbol: string): number => {
+  if (supplyCache.has(symbol)) return supplyCache.get(symbol)!;
+  let seed = 0;
+  for (let i = 0; i < symbol.length; i++) seed += symbol.charCodeAt(i);
+  const supply = (seed * 1_000_000) + 14_500_000;
+  supplyCache.set(symbol, supply);
+  return supply;
+};
+
+// Debounces the filter computation — input updates instantly, filter runs 150ms after typing stops
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
 
 // Deterministic mock generation for missing MEXC fields (Market Cap & Supply)
 const generateMockSupply = (symbol: string) => {
@@ -27,7 +52,8 @@ export const MarketGrid: React.FC = () => {
   const selectedSymbol = useMarketStore(state => state.selectedSymbol);
   const setSelectedSymbol = useMarketStore(state => state.setSelectedSymbol);
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedQuery = useDebounce(searchInput, 150);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Full filtered list (all USDT pairs with decent volume, sorted by volume)
@@ -38,17 +64,15 @@ export const MarketGrid: React.FC = () => {
       .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
   }, [tickers]);
 
-  // Apply search filter
   const filteredTickers = useMemo(() => {
-    if (!searchQuery.trim()) return allTickers;
-    const q = searchQuery.toUpperCase().trim();
+    if (!debouncedQuery.trim()) return allTickers;
+    const q = debouncedQuery.toUpperCase().trim();
     return allTickers.filter(t => {
       const name = t.symbol.replace('USDT', '');
       return name.includes(q) || t.symbol.includes(q);
     });
-  }, [allTickers, searchQuery]);
+  }, [allTickers, debouncedQuery]);
 
-  // Reset to page 1 when search changes
   const safeCurrentPage = useMemo(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTickers.length / ITEMS_PER_PAGE));
     return currentPage > maxPage ? 1 : currentPage;
@@ -87,11 +111,11 @@ export const MarketGrid: React.FC = () => {
         <input
           type="text"
           placeholder="Search token (e.g. BTC, ETH, SOL)..."
-          value={searchQuery}
-          onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+          value={searchInput}
+          onChange={(e) => { setSearchInput(e.target.value); setCurrentPage(1); }}
           className="w-full bg-slate-900/50 backdrop-blur-md text-white border border-white/5 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder:text-slate-500 font-mono shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
         />
-        {searchQuery && (
+        {searchInput && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-mono">
             {filteredTickers.length} results
           </span>
@@ -117,7 +141,7 @@ export const MarketGrid: React.FC = () => {
                 <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                   <div className="flex flex-col items-center gap-2">
                     <Search className="w-8 h-8 text-slate-700" />
-                    <span className="text-sm">No tokens found for &quot;{searchQuery}&quot;</span>
+                    <span className="text-sm">No tokens found for &quot;{searchInput}&quot;</span>
                   </div>
                 </td>
               </tr>
@@ -126,8 +150,7 @@ export const MarketGrid: React.FC = () => {
                 const price = parseFloat(ticker.lastPrice);
                 const change = parseFloat(ticker.priceChangePercent);
                 const isSelected = selectedSymbol === ticker.symbol;
-                const supply = generateMockSupply(ticker.symbol);
-                const marketCap = price * supply;
+                const marketCap = price * getSupply(ticker.symbol);
                 
                 return (
                   <tr 
@@ -151,10 +174,10 @@ export const MarketGrid: React.FC = () => {
                       {change >= 0 ? '▲' : '▼'} {Math.abs(change * 100).toFixed(2)}%
                     </td>
                     <td className="px-6 py-4 text-right text-slate-300 font-mono">
-                      ${marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      ${marketCapFormatter.format(marketCap)}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-400 font-mono">
-                      ${parseFloat(ticker.quoteVolume).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      ${volumeFormatter.format(parseFloat(ticker.quoteVolume))}
                     </td>
                   </tr>
                 );

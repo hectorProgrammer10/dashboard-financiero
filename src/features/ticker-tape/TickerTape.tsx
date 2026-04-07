@@ -11,7 +11,7 @@ export const TickerTape: React.FC = () => {
     return <div className="h-10 bg-[#0B0E14] border-b border-[#151924] w-full" />;
   }
 
-  // Duplicate for seamless infinite scrolling
+  // Duplicate items for seamless infinite scroll loop
   const tickerItems = [...coins.slice(0, 15), ...coins.slice(0, 15)];
 
   return (
