@@ -40,3 +40,61 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(79, 70, 229, 0.6);
 }
+
+/* scrollbar-hide — hides scrollbar visually without removing scroll behavior */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Performance: GPU compositing hints ──────────────────────────────────────
+   Elements with constant CSS animations (spinners, background orbs, ticker tape)
+   are promoted to their own compositor layer via will-change.
+   This prevents them from triggering layout/paint on the main thread every frame.
+   Only apply to elements that ACTUALLY animate — over-using this wastes VRAM. */
+
+/* Loading spinners (animate-spin) */
+.animate-spin {
+  will-change: transform;
+}
+
+/* Pulse animations (animate-pulse, status indicators, news dot) */
+.animate-pulse {
+  will-change: opacity;
+}
+
+/* Fixed decorative background orbs — static but blurred, promoted to own layer
+   so repaints of the content above don't re-composite them */
+.fixed.rounded-full.pointer-events-none {
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU layer creation */
+}
+
+/* Backdrop-blur elements — these are expensive to composite.
+   Using contain tells the browser to limit style/layout recalculation scope. */
+.backdrop-blur-xl,
+.backdrop-blur-2xl {
+  contain: layout style;
+}
+
+/* ─── Performance: smooth scrolling ──────────────────────────────────────────*/
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Performance: reduce motion for accessibility ────────────────────────────
+   Respects user's OS preference to reduce animations. Critical for accessibility
+   AND helps users on low-power devices. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

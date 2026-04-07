@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { MarketGrid } from '../features/asset-table/components/MarketGrid';
 import { DeepAnalysisPanel } from '../features/price-chart/components/DeepAnalysisPanel';
 import { useMarketStore } from '../shared/store/useMarketStore';
 import { useMexcWebSocket } from '../shared/hooks/useMexcWebSocket';
 import { SplashScreen } from '../shared/components/SplashScreen';
-import { Activity } from 'lucide-react';
 
 export default function Home() {
   const selectedSymbol = useMarketStore(state => state.selectedSymbol);
@@ -31,7 +31,7 @@ export default function Home() {
         <div className="max-w-[1920px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-md overflow-hidden">
-              <img id='logo' src="/logoapex.svg" alt="Logo" className="object-contain p-1.5 relative z-0 opacity-80" />
+              <Image id='logo' src="/logoapex.svg" alt="Logo" width={48} height={48} className="object-contain p-1.5 relative z-0 opacity-80" />
               
               {!showSplash && (
                 <motion.svg
@@ -80,7 +80,7 @@ export default function Home() {
             {/* Powered By Badge */}
             <div className="flex items-center gap-1.5 sm:gap-2 border-r border-slate-700/60 pr-2 sm:pr-4 mr-1">
               <span className="text-[8px] sm:text-[10px] uppercase tracking-widest text-slate-500 font-sans font-semibold">Powered by MEXC</span>
-              <img src="/MEXC.png" alt="MEXC" className="h-3 sm:h-3.5 object-contain opacity-70 hover:opacity-100 transition-opacity" />
+              <Image src="/MEXC.png" alt="MEXC" width={56} height={14} className="h-3 sm:h-3.5 object-contain opacity-70 hover:opacity-100 transition-opacity" />
             </div>
 
             {/* WS Indicator */}

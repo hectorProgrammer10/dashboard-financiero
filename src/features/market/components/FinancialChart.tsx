@@ -16,7 +16,6 @@ import {
 import { Line } from 'react-chartjs-2';
 import type { MarketDataPoint } from '../workers/marketData.worker';
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -43,17 +42,17 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
         {
           label: 'Market Price',
           data: data.map((d) => d.value),
-          borderColor: 'rgba(56, 189, 248, 1)', // Tailwind sky-400
+          borderColor: 'rgba(56, 189, 248, 1)',
           backgroundColor: 'rgba(56, 189, 248, 0.1)',
           borderWidth: 2,
           fill: true,
-          pointRadius: 0, // Disable points for performance
-          tension: 0.1, // Slight curve
+          pointRadius: 0,
+          tension: 0.1,
         },
         {
           label: 'SMA 20',
           data: data.map((d) => d.sma20 || null),
-          borderColor: 'rgba(167, 139, 250, 1)', // Tailwind violet-400
+          borderColor: 'rgba(167, 139, 250, 1)',
           borderWidth: 1.5,
           borderDash: [5, 5],
           pointRadius: 0,
@@ -63,8 +62,8 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
         {
           label: 'SMA 50',
           data: data.map((d) => d.sma50 || null),
-          borderColor: 'rgba(251, 146, 60, 1)', // Tailwind orange-400
-          borderWidth: 1.5, // Thin line for background metric
+          borderColor: 'rgba(251, 146, 60, 1)',
+          borderWidth: 1.5,
           pointRadius: 0,
           fill: false,
           tension: 0.2,
@@ -76,7 +75,7 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false, // CRITICAL FOR 60FPS
+    animation: false,
     interaction: {
       mode: 'index',
       intersect: false,
@@ -84,7 +83,7 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
     plugins: {
       legend: {
         labels: {
-          color: '#9ca3af', // Gray-400
+          color: '#9ca3af',
           usePointStyle: true,
         }
       },
@@ -137,6 +136,5 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
   );
 };
 
-// React.memo to prevent unnecessary re-renders if parent changes 
-// but worker data reference hasn't (though in our case `data` changes frequently)
 export const FinancialChart = React.memo(FinancialChartComponent);
+

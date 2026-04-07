@@ -13,10 +13,10 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 type Timeframe = '1D' | '1W' | '1M' | '1Y';
 
 const TIMEFRAME_CONFIG: Record<Timeframe, { interval: string; limit: number }> = {
-  '1D': { interval: '15m', limit: 96 },   // 15-min candles × 96 = 24h
-  '1W': { interval: '1h',  limit: 168 },  // 1h candles × 168 = 7 days
-  '1M': { interval: '4h',  limit: 180 },  // 4h candles × 180 ≈ 30 days
-  '1Y': { interval: '1d',  limit: 365 },  // daily candles × 365
+  '1D': { interval: '15m', limit: 96 },
+  '1W': { interval: '1h',  limit: 168 },
+  '1M': { interval: '4h',  limit: 180 },
+  '1Y': { interval: '1d',  limit: 365 },
 };
 
 export const DeepAnalysisPanel: React.FC = () => {
@@ -27,9 +27,8 @@ export const DeepAnalysisPanel: React.FC = () => {
 
   const { interval, limit } = TIMEFRAME_CONFIG[timeframe];
 
-  // SWR key includes symbol + timeframe so it refetches on change
   const { data: klines, isLoading, isValidating } = useSWR(
-    selectedSymbol ? `klines-${selectedSymbol}-${timeframe}` : null, 
+    selectedSymbol ? `klines-${selectedSymbol}-${timeframe}` : null,
     () => fetchKlines(selectedSymbol!, interval, limit),
     { revalidateOnFocus: false, keepPreviousData: true }
   );
@@ -37,7 +36,6 @@ export const DeepAnalysisPanel: React.FC = () => {
   const [smaData, setSmaData] = useState<{ sma50: number[], sma200: number[] } | null>(null);
   const workerRef = useRef<Worker | null>(null);
 
-  // Parse klines and handle Worker logic
   const { dates, prices } = useMemo(() => {
     if (!klines) return { dates: [], prices: [] };
 
@@ -53,7 +51,6 @@ export const DeepAnalysisPanel: React.FC = () => {
     return { dates, prices };
   }, [klines, timeframe]);
 
-  // Update the very last price with live WebSocket data if available
   const currentPrices = useMemo(() => {
     const mutablePrices = [...prices];
     if (liveData.lastPrice && mutablePrices.length > 0) {
@@ -79,18 +76,15 @@ export const DeepAnalysisPanel: React.FC = () => {
     }
   }, [prices, currentPrices]);
 
-  // Cleanup worker on unmount
   useEffect(() => {
-    return () => {
-      workerRef.current?.terminate();
-    };
+    return () => { workerRef.current?.terminate(); };
   }, []);
 
-  // Reset SMA when timeframe changes so stale lines don't linger
   const handleTimeframeChange = useCallback((tf: Timeframe) => {
     setSmaData(null);
     setTimeframe(tf);
   }, []);
+
 
   if (!selectedSymbol) return null;
 
