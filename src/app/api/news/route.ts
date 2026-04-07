@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Server-only — never expose to the client
 const NEWS_API_KEY = process.env.NEWS_API_KEY;
-const NEWS_API_URL = 'https://newsapi.org/v2/everything';
+const NEWS_API_URL = 'https://gnews.io/api/v4/search';
 
 const DEFAULT_QUERY = 'cryptocurrency OR bitcoin OR ethereum';
 const MAX_QUERY_LENGTH = 200;
@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
 
   const params = new URLSearchParams({
     q: query,
-    sortBy: 'publishedAt',
-    language: 'en',
-    pageSize: '6',
-    apiKey: NEWS_API_KEY,
+    lang: 'en',
+    max: '6',
+    sortby: 'publishedAt',
+    apikey: NEWS_API_KEY,
   });
 
   try {
@@ -62,7 +62,35 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data, { headers: CORS_HEADERS });
+    
+    // Map the GNews response back to the expected legacy NewsAPI format 
+    // to maintain UI compatibility across our components.
+    interface GNewsArticle {
+      title: string;
+      description: string;
+      content: string;
+      url: string;
+      image: string;
+      publishedAt: string;
+      source: { name: string; url: string };
+    }
+
+    const mappedArticles = (data.articles || []).map((article: GNewsArticle) => ({
+      source: { id: null, name: article.source?.name || 'GNews' },
+      author: null,
+      title: article.title,
+      description: article.description,
+      url: article.url,
+      urlToImage: article.image || null,
+      publishedAt: article.publishedAt,
+      content: article.content
+    }));
+
+    return NextResponse.json({
+      status: 'ok',
+      totalResults: data.totalArticles || 0,
+      articles: mappedArticles
+    }, { headers: CORS_HEADERS });
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'AbortError';
     return NextResponse.json(
