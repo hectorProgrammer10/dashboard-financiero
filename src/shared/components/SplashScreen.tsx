@@ -17,8 +17,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   useEffect(() => {
     const hideTimer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onComplete, 600);
-    }, 2800);
+      setTimeout(onComplete, 250);
+    }, 1966);
 
     return () => clearTimeout(hideTimer);
   }, [onComplete]);

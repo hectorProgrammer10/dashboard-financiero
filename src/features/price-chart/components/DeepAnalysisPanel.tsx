@@ -31,6 +31,7 @@ export const DeepAnalysisPanel: React.FC = () => {
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
+  const handleMouseUpRef = useRef<(() => void) | null>(null);
 
   // Monitor screen size to only allow resizing on desktop (xl screen size and above)
   useEffect(() => {
@@ -60,11 +61,15 @@ export const DeepAnalysisPanel: React.FC = () => {
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
     document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener('mouseup', handleMouseUpRef.current!);
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
     document.body.classList.remove('is-resizing');
   }, [handleMouseMove]);
+
+  useEffect(() => {
+    handleMouseUpRef.current = handleMouseUp;
+  }, [handleMouseUp]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,7 +77,7 @@ export const DeepAnalysisPanel: React.FC = () => {
     startX.current = e.clientX;
     startWidth.current = width;
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleMouseUpRef.current!);
     document.body.style.cursor = 'ew-resize';
     document.body.style.userSelect = 'none';
     document.body.classList.add('is-resizing');
@@ -82,12 +87,12 @@ export const DeepAnalysisPanel: React.FC = () => {
   useEffect(() => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleMouseUpRef.current!);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
       document.body.classList.remove('is-resizing');
     };
-  }, [handleMouseMove, handleMouseUp]);
+  }, [handleMouseMove]);
 
   const { interval, limit } = TIMEFRAME_CONFIG[timeframe];
 
