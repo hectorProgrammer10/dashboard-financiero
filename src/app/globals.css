@@ -98,3 +98,8 @@ html {
   }
 }
 
+/* Disable transitions on all elements during panel resizing for peak performance & latency-free drag experience */
+body.is-resizing * {
+  transition: none !important;
+}
+

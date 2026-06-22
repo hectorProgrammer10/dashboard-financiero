@@ -6,7 +6,7 @@ import { fetchTickers } from '../../../shared/api/mexc';
 import { ApiErrorScreen } from '../../../shared/components/ApiErrorScreen';
 import { PriceCell } from './PriceCell';
 import { useMarketStore } from '../../../shared/store/useMarketStore';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { NewsCarousel } from '../../news/components/NewsCarousel';
 
 const ITEMS_PER_PAGE = 20;
@@ -113,12 +113,21 @@ export const MarketGrid: React.FC = () => {
           placeholder="Search token (e.g. BTC, ETH, SOL)..."
           value={searchInput}
           onChange={(e) => { setSearchInput(e.target.value); setCurrentPage(1); }}
-          className="w-full bg-slate-900/50 backdrop-blur-md text-white border border-white/5 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder:text-slate-500 font-mono shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
+          className="w-full bg-slate-900/50 backdrop-blur-md text-white border border-white/5 rounded-xl pl-11 pr-32 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder:text-slate-500 font-mono shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
         />
         {searchInput && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-mono">
-            {filteredTickers.length} results
-          </span>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
+            <span className="text-xs text-slate-500 font-mono">
+              {filteredTickers.length} results
+            </span>
+            <button
+              onClick={() => { setSearchInput(''); setCurrentPage(1); }}
+              className="p-1 rounded-md text-slate-500 hover:text-white hover:bg-white/10 transition-colors focus:outline-none"
+              title="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </div>
 
