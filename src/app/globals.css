@@ -73,11 +73,10 @@ body {
   transform: translateZ(0); /* Force GPU layer creation */
 }
 
-/* Backdrop-blur elements — these are expensive to composite.
-   Using contain tells the browser to limit style/layout recalculation scope. */
+/* Backdrop-blur elements — these are expensive to composite. */
 .backdrop-blur-xl,
 .backdrop-blur-2xl {
-  contain: layout style;
+  /* contain rule removed to allow natural content-based height calculation */
 }
 
 /* ─── Performance: smooth scrolling ──────────────────────────────────────────*/
@@ -96,5 +95,10 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Disable transitions on all elements during panel resizing for peak performance & latency-free drag experience */
+body.is-resizing * {
+  transition: none !important;
 }
 

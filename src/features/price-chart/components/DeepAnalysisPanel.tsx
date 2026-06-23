@@ -25,6 +25,75 @@ export const DeepAnalysisPanel: React.FC = () => {
   const liveData = useMarketStore(state => state.liveData);
   const [timeframe, setTimeframe] = useState<Timeframe>('1Y');
 
+  // Drag-to-resize state and logic
+  const [width, setWidth] = useState(384); // Initial width 384px (w-96)
+  const [isXl, setIsXl] = useState(false);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startWidth = useRef(0);
+  const handleMouseUpRef = useRef<(() => void) | null>(null);
+
+  // Monitor screen size to only allow resizing on desktop (xl screen size and above)
+  useEffect(() => {
+    const checkSize = () => {
+      setIsXl(window.innerWidth >= 1280);
+    };
+    checkSize();
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging.current) return;
+    const deltaX = startX.current - e.clientX;
+    let newWidth = startWidth.current + deltaX;
+
+    // Minimum: 300px, Maximum: 50% of the screen width
+    const minWidth = 300;
+    const maxWidth = window.innerWidth * 0.5;
+
+    if (newWidth < minWidth) newWidth = minWidth;
+    if (newWidth > maxWidth) newWidth = maxWidth;
+
+    setWidth(newWidth);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    isDragging.current = false;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUpRef.current!);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    document.body.classList.remove('is-resizing');
+  }, [handleMouseMove]);
+
+  useEffect(() => {
+    handleMouseUpRef.current = handleMouseUp;
+  }, [handleMouseUp]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    startX.current = e.clientX;
+    startWidth.current = width;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUpRef.current!);
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    document.body.classList.add('is-resizing');
+  };
+
+  // Clean up listeners on unmount
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUpRef.current!);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.body.classList.remove('is-resizing');
+    };
+  }, [handleMouseMove]);
+
   const { interval, limit } = TIMEFRAME_CONFIG[timeframe];
 
   const { data: klines, isLoading, isValidating } = useSWR(
@@ -146,7 +215,20 @@ export const DeepAnalysisPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-full xl:w-96 shrink-0 bg-slate-900/40 backdrop-blur-2xl border-l border-white/5 p-6 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full absolute right-0 top-0 z-20 xl:static animate-in slide-in-from-right-8 duration-300 overflow-y-auto scrollbar-hide">
+    <div 
+      className="w-full shrink-0 bg-slate-900/40 backdrop-blur-2xl border-l border-white/5 p-6 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full absolute right-0 top-0 z-20 xl:relative xl:right-auto xl:top-auto animate-in slide-in-from-right-8 duration-300 overflow-y-auto scrollbar-hide"
+      style={isXl ? { width: `${width}px` } : undefined}
+    >
+      {/* Resizable handle */}
+      {isXl && (
+        <div
+          onMouseDown={handleMouseDown}
+          className="absolute left-0 top-0 bottom-0 w-2 -ml-1 cursor-ew-resize group/resize z-30 flex items-center justify-center"
+        >
+          {/* Subtle indicator line that glows on hover */}
+          <div className="w-[2px] h-full bg-transparent group-hover/resize:bg-blue-500/50 transition-colors duration-150" />
+        </div>
+      )}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight">{selectedSymbol}</h2>
