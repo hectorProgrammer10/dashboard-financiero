@@ -6,7 +6,7 @@ global.ResizeObserver = class ResizeObserver {
   constructor(callback) {
     this.callback = callback;
   }
-  observe(element) {
+  observe() {
     if (this.callback) {
       // Trigger callback with default dimensions to let components calculate initial layouts
       this.callback([
@@ -81,19 +81,26 @@ global.Worker = class MockWorker {
 
 // Mock framer-motion globally
 jest.mock('framer-motion', () => {
-  const React = require('react');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const ReactFM = require('react');
+
+  const MockDiv = ReactFM.forwardRef(function MockMotionDiv(props, ref) {
+    const { initial: _i, animate: _a, exit: _e, transition: _t, ...rest } = props;
+    return ReactFM.createElement('div', { ...rest, ref });
+  });
+  MockDiv.displayName = 'MockMotionDiv';
+
+  const MockPath = ReactFM.forwardRef(function MockMotionPath(props, ref) {
+    const { initial: _i, animate: _a, exit: _e, transition: _t, ...rest } = props;
+    return ReactFM.createElement('path', { ...rest, ref });
+  });
+  MockPath.displayName = 'MockMotionPath';
+
   return {
     motion: {
-      div: React.forwardRef((props, ref) => {
-        // Filter out framer-motion props to prevent React console warnings
-        const { initial, animate, exit, transition, ...rest } = props;
-        return React.createElement('div', { ...rest, ref });
-      }),
-      path: React.forwardRef((props, ref) => {
-        const { initial, animate, exit, transition, ...rest } = props;
-        return React.createElement('path', { ...rest, ref });
-      }),
+      div: MockDiv,
+      path: MockPath,
     },
-    AnimatePresence: ({ children }) => React.createElement(React.Fragment, {}, children),
+    AnimatePresence: ({ children }) => ReactFM.createElement(ReactFM.Fragment, {}, children),
   };
 });

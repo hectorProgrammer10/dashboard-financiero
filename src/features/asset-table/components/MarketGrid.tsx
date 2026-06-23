@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { fetchTickers } from '../../../shared/api/mexc';
 import { ApiErrorScreen } from '../../../shared/components/ApiErrorScreen';
@@ -37,12 +37,7 @@ function useDebounce<T>(value: T, delay: number): T {
   return debounced;
 }
 
-// Deterministic mock generation for missing MEXC fields (Market Cap & Supply)
-const generateMockSupply = (symbol: string) => {
-  let seed = 0;
-  for (let i = 0; i < symbol.length; i++) seed += symbol.charCodeAt(i);
-  return (seed * 1000000) + 14500000;
-};
+
 
 export const MarketGrid: React.FC = () => {
   const { data: tickers, error, isLoading, mutate } = useSWR('mexc-tickers', fetchTickers, { 

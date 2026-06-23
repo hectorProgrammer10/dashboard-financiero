@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 
 export type HistoricDataPoint = {
   time: number;

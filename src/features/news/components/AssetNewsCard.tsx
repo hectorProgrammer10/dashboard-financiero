@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useNewsApi } from '../hooks/useNewsApi';
 import { ExternalLink, AlertCircle } from 'lucide-react';
 
@@ -69,9 +70,11 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
           <div key={idx} className="group bg-slate-900/40 backdrop-blur-xl border border-white/5 hover:border-blue-500/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden transition-all duration-300">
             {article.urlToImage && (
               <div className="h-24 w-full relative overflow-hidden bg-slate-900">
-                <img 
+                <Image 
                   src={article.urlToImage} 
                   alt={article.title}
+                  fill
+                  unoptimized
                   className="object-cover w-full h-full opacity-70 group-hover:opacity-100 transition-opacity duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
