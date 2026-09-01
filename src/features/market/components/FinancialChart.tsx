@@ -121,11 +121,11 @@ const FinancialChartComponent: React.FC<FinancialChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="w-full h-[400px] bg-slate-900/50 rounded-xl p-4 border border-slate-800 backdrop-blur-sm shadow-xl relative overflow-hidden">
+    <div className="w-full h-[400px] bg-slate-900/50 rounded-xl p-4 border-[0.5px] border-slate-800/80 backdrop-blur-sm shadow-xl relative overflow-hidden">
       {data.length === 0 ? (
         <div className="absolute inset-0 flex items-center justify-center text-slate-500">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+            <div className="w-5 h-5 rounded-full border-[1.5px] border-indigo-500 border-t-transparent animate-spin" />
             Connecting to data stream...
           </div>
         </div>

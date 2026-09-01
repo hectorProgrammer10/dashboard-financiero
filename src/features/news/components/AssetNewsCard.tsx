@@ -20,7 +20,7 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
 
   if (isLoading) {
     return (
-      <div className="mt-6 border-t border-white/5 pt-4">
+      <div className="mt-6 border-t-[0.5px] border-white/10 pt-4">
         <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
           Latest {assetName} News
@@ -45,12 +45,12 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
 
   if (error || topArticles.length === 0) {
     return (
-      <div className="mt-6 border-t border-white/5 pt-4">
+      <div className="mt-6 border-t-[0.5px] border-white/10 pt-4">
         <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
           Latest {assetName} News
         </h3>
-        <div className="w-full bg-slate-900/40 backdrop-blur-md rounded-xl p-4 flex items-start gap-3 border border-white/5 text-slate-400">
+        <div className="w-full bg-slate-900/40 backdrop-blur-md rounded-xl p-4 flex items-start gap-3 border-[0.5px] border-white/10 text-slate-400">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <p className="text-xs">No recent news available for {assetName} at this moment.</p>
         </div>
@@ -59,7 +59,7 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
   }
 
   return (
-    <div className="mt-6 border-t border-white/5 pt-4">
+    <div className="mt-6 border-t-[0.5px] border-white/10 pt-4">
       <h3 className="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.9)]" />
         Top {assetName} Stories
@@ -67,7 +67,7 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
       
       <div className="flex flex-col gap-4">
         {topArticles.map((article, idx) => (
-          <div key={idx} className="group bg-slate-900/40 backdrop-blur-xl border border-white/5 hover:border-blue-500/30 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden transition-all duration-300">
+          <div key={idx} className="group bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 hover:border-blue-500/40 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden transition-all duration-300">
             {article.urlToImage && (
               <div className="h-24 w-full relative overflow-hidden bg-slate-900">
                 <Image 
@@ -96,7 +96,7 @@ export const AssetNewsCard: React.FC<AssetNewsCardProps> = ({ symbol }) => {
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-300 font-medium text-xs rounded-xl transition-all border border-blue-500/20 hover:border-blue-500/40 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                className="flex items-center justify-center gap-1.5 w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-300 font-medium text-xs rounded-xl transition-all border-[0.5px] border-blue-500/30 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]"
               >
                 Read Article
                 <ExternalLink className="w-3 h-3" />
