@@ -8,14 +8,14 @@ export const TickerTape: React.FC = () => {
   const { coins, isLoading } = useCoinMarkets();
 
   if (isLoading || !coins) {
-    return <div className="h-10 bg-[#0B0E14] border-b border-[#151924] w-full" />;
+    return <div className="h-10 bg-[#0B0E14] border-b-[0.5px] border-white/5 w-full" />;
   }
 
   // Duplicate items for seamless infinite scroll loop
   const tickerItems = [...coins.slice(0, 15), ...coins.slice(0, 15)];
 
   return (
-    <div className="h-10 bg-[#151924]/80 backdrop-blur-md border-b border-[#2A2E39] w-full overflow-hidden flex items-center shrink-0">
+    <div className="h-10 bg-[#151924]/80 backdrop-blur-md border-b-[0.5px] border-white/10 w-full overflow-hidden flex items-center shrink-0">
       <div className="flex animate-marquee whitespace-nowrap">
         {tickerItems.map((coin, index) => (
           <div key={`${coin.id}-${index}`} className="flex items-center gap-3 mx-6 font-mono text-sm">

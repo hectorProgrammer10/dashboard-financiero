@@ -25,8 +25,8 @@ export const NewsCarousel: React.FC = () => {
 
   if (error) {
     return (
-      <div className="w-full bg-rose-950/20 border border-rose-900/50 rounded-xl p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-sm min-h-[200px]">
-        <div className="w-12 h-12 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20">
+      <div className="w-full bg-rose-950/20 border-[0.5px] border-rose-900/50 rounded-xl p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-sm min-h-[200px]">
+        <div className="w-12 h-12 bg-rose-500/10 rounded-full flex items-center justify-center border-[0.5px] border-rose-500/30">
           <AlertCircle className="w-6 h-6 text-rose-400" />
         </div>
         <div className="text-center">
@@ -35,7 +35,7 @@ export const NewsCarousel: React.FC = () => {
         </div>
         <button
           onClick={retry}
-          className="mt-2 flex items-center gap-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-lg text-sm transition-colors border border-rose-500/20"
+          className="mt-2 flex items-center gap-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-lg text-sm transition-colors border-[0.5px] border-rose-500/30"
         >
           <RefreshCcw className="w-4 h-4" />
           Retry Connection
@@ -46,14 +46,14 @@ export const NewsCarousel: React.FC = () => {
 
   if (isLoading || topArticles.length === 0) {
     return (
-      <div className="w-full bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl min-h-[200px] flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+      <div className="w-full bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl min-h-[200px] flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent animate-[shimmer_2s_infinite] -translate-x-[100%]" 
              style={{ 
                backgroundImage: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.1), transparent)' 
              }} 
         />
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+          <div className="w-10 h-10 border-[2px] border-blue-500/30 border-t-blue-400 rounded-full animate-spin shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
           <p className="text-blue-300/70 text-sm font-mono animate-pulse">Scanning news feeds...</p>
         </div>
       </div>
@@ -67,12 +67,12 @@ export const NewsCarousel: React.FC = () => {
 
   return (
     <div 
-      className="w-full bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden relative group shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+      className="w-full bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl overflow-hidden relative group shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Header Tag */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg">
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-1.5 rounded-full border-[0.5px] border-white/20 shadow-lg">
         <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shadow-[0_0_12px_rgba(59,130,246,0.8)]"></span>
         <span className="text-xs font-bold text-white tracking-widest uppercase font-mono">Market Intel</span>
       </div>
@@ -120,7 +120,7 @@ export const NewsCarousel: React.FC = () => {
                 href={currentArticle.url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-blue-600/80 hover:bg-blue-500 backdrop-blur-xl px-4 py-2 rounded-lg w-fit transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] border border-blue-400/30"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-blue-600/80 hover:bg-blue-500 backdrop-blur-xl px-4 py-2 rounded-lg w-fit transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] border-[0.5px] border-blue-400/40"
               >
                 Read Full Context
                 <ExternalLink className="w-4 h-4" />
@@ -134,13 +134,13 @@ export const NewsCarousel: React.FC = () => {
       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 px-4 flex justify-between z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <button 
           onClick={handlePrev}
-          className="pointer-events-auto p-2 bg-slate-900/60 hover:bg-blue-600/60 backdrop-blur-xl border border-white/10 rounded-full text-white transition-all transform hover:scale-110 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+          className="pointer-events-auto p-2 bg-slate-900/60 hover:bg-blue-600/60 backdrop-blur-xl border-[0.5px] border-white/20 rounded-full text-white transition-all transform hover:scale-110 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <button 
           onClick={handleNext}
-          className="pointer-events-auto p-2 bg-slate-900/60 hover:bg-blue-600/60 backdrop-blur-xl border border-white/10 rounded-full text-white transition-all transform hover:scale-110 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+          className="pointer-events-auto p-2 bg-slate-900/60 hover:bg-blue-600/60 backdrop-blur-xl border-[0.5px] border-white/20 rounded-full text-white transition-all transform hover:scale-110 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
         >
           <ChevronRight className="w-5 h-5" />
         </button>

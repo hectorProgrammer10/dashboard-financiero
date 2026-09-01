@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <>
     {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-    <div className="min-h-screen bg-[#030712] text-slate-200 selection:bg-blue-500/30 overflow-hidden flex flex-col font-sans">
+    <div className="h-screen max-h-screen bg-[#030712] text-slate-200 selection:bg-blue-500/30 overflow-hidden flex flex-col font-sans">
       {/* Background Decor - Blue Glassmorphism Orbs */}
       <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[150px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-cyan-500/15 blur-[150px] rounded-full pointer-events-none" />
@@ -27,10 +27,10 @@ export default function Home() {
       <div className="fixed top-[20%] right-[20%] w-[30%] h-[30%] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header */}
-      <header className="px-6 py-5 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl relative z-10 shrink-0">
+      <header className="px-6 py-5 border-b-[0.5px] border-white/10 bg-slate-950/50 backdrop-blur-xl relative z-10 shrink-0">
         <div className="max-w-[1920px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] backdrop-blur-md overflow-hidden">
+            <div className="relative w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center border-[0.5px] border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.1)] backdrop-blur-md overflow-hidden">
               <Image id='logo' src="/logoapex.svg" alt="Logo" width={48} height={48} className="object-contain p-1.5 relative z-0 opacity-80" />
               
               {!showSplash && (
@@ -78,13 +78,13 @@ export default function Home() {
           
           <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono text-slate-500">
             {/* Powered By Badge */}
-            <div className="flex items-center gap-1.5 sm:gap-2 border-r border-slate-700/60 pr-2 sm:pr-4 mr-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 border-r-[0.5px] border-slate-700/60 pr-2 sm:pr-4 mr-1">
               <span className="text-[8px] sm:text-[10px] uppercase tracking-widest text-slate-500 font-sans font-semibold">Powered by MEXC</span>
               <Image src="/MEXC.png" alt="MEXC" width={56} height={14} className="h-3 sm:h-3.5 object-contain opacity-70 hover:opacity-100 transition-opacity" />
             </div>
 
             {/* WS Indicator */}
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border-[0.5px] border-slate-700/60">
               <span className={`w-2 h-2 rounded-full ${selectedSymbol ? 'bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`} />
               {selectedSymbol ? <span className="hidden sm:inline">WS: {selectedSymbol}</span> : <span className="hidden sm:inline">WS: INACTIVE</span>}
               <span className="sm:hidden">{selectedSymbol ? selectedSymbol : 'WS'}</span>
@@ -96,7 +96,7 @@ export default function Home() {
       {/* Main Workspace (Split View) */}
       <main className="flex-1 flex overflow-hidden relative z-10 p-4 sm:p-6 lg:p-8 max-w-[1920px] mx-auto w-full gap-8">
         
-        <div className={`flex-1 overflow-y-auto transition-all duration-500 rounded-xl scrollbar-hide`}>
+        <div className={`flex-1 overflow-y-auto transition-all duration-500 rounded-xl custom-scrollbar`}>
           <MarketGrid />
         </div>
 

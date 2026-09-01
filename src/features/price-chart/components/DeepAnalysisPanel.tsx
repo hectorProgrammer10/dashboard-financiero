@@ -10,20 +10,21 @@ import { AssetNewsCard } from '../../news/components/AssetNewsCard';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-type Timeframe = '1D' | '1W' | '1M' | '1Y';
+type Timeframe = '15m' | '1h' | '4h' | '1D' | '1W';
 
 const TIMEFRAME_CONFIG: Record<Timeframe, { interval: string; limit: number }> = {
-  '1D': { interval: '15m', limit: 96 },
-  '1W': { interval: '1h',  limit: 168 },
-  '1M': { interval: '4h',  limit: 180 },
-  '1Y': { interval: '1d',  limit: 365 },
+  '15m': { interval: '15m', limit: 96 },
+  '1h':  { interval: '60m', limit: 168 },
+  '4h':  { interval: '4h',  limit: 180 },
+  '1D':  { interval: '1d',  limit: 180 },
+  '1W':  { interval: '1W',  limit: 52 },
 };
 
 export const DeepAnalysisPanel: React.FC = () => {
   const selectedSymbol = useMarketStore(state => state.selectedSymbol);
   const setSelectedSymbol = useMarketStore(state => state.setSelectedSymbol);
   const liveData = useMarketStore(state => state.liveData);
-  const [timeframe, setTimeframe] = useState<Timeframe>('1Y');
+  const [timeframe, setTimeframe] = useState<Timeframe>('4h');
 
   // Drag-to-resize state and logic
   const [width, setWidth] = useState(384); // Initial width 384px (w-96)
@@ -111,9 +112,10 @@ export const DeepAnalysisPanel: React.FC = () => {
     const dates = klines.map((k: number[]) => {
       const d = new Date(k[0]);
       // Adapt date label format based on timeframe granularity
-      if (timeframe === '1D') return `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
-      if (timeframe === '1W') return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}h`;
-      return `${d.getMonth() + 1}/${d.getDate()}`;
+      if (timeframe === '15m') return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      if (timeframe === '1h' || timeframe === '4h') return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours().toString().padStart(2, '0')}h`;
+      if (timeframe === '1D') return `${d.getMonth() + 1}/${d.getDate()}`;
+      return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
     });
 
     const prices = klines.map((k: number[]) => parseFloat(k[4] as unknown as string));
@@ -216,72 +218,96 @@ export const DeepAnalysisPanel: React.FC = () => {
 
   return (
     <div 
-      className="w-full shrink-0 bg-slate-900/40 backdrop-blur-2xl border-l border-white/5 p-6 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full absolute right-0 top-0 z-20 xl:relative xl:right-auto xl:top-auto animate-in slide-in-from-right-8 duration-300 overflow-y-auto scrollbar-hide"
+      className="w-full shrink-0 bg-slate-900/40 backdrop-blur-2xl border-l-[0.5px] border-white/10 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full max-h-full absolute right-0 top-0 z-20 xl:relative xl:right-auto xl:top-auto animate-in slide-in-from-right-8 duration-300"
       style={isXl ? { width: `${width}px` } : undefined}
     >
-      {/* Resizable handle */}
+      {/* Resizable handle - stays pinned across 100% of the visible container height regardless of scroll */}
       {isXl && (
         <div
           onMouseDown={handleMouseDown}
-          className="absolute left-0 top-0 bottom-0 w-2 -ml-1 cursor-ew-resize group/resize z-30 flex items-center justify-center"
+          className="absolute left-0 top-0 bottom-0 w-3 -ml-1.5 cursor-ew-resize group/resize z-30 flex items-center justify-center hover:bg-blue-500/10 transition-colors"
+          title="Arrastra para redimensionar"
         >
           {/* Subtle indicator line that glows on hover */}
-          <div className="w-[2px] h-full bg-transparent group-hover/resize:bg-blue-500/50 transition-colors duration-150" />
+          <div className="w-[2px] h-full bg-transparent group-hover/resize:bg-blue-500/60 transition-colors duration-150" />
         </div>
       )}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">{selectedSymbol}</h2>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-2xl font-mono text-slate-200">
-              ${liveData.lastPrice || currentPrices[currentPrices.length - 1]?.toFixed(4) || '---'}
-            </span>
-            {liveData.priceChangePercent && (
-              <span className={`text-sm font-mono ${parseFloat(liveData.priceChangePercent) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {parseFloat(liveData.priceChangePercent) >= 0 ? '+' : ''}{(parseFloat(liveData.priceChangePercent) * 100).toFixed(2)}%
-              </span>
-            )}
-          </div>
-        </div>
-        <button 
-          onClick={() => setSelectedSymbol(null)}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 text-slate-400 transition-colors"
-        >
-          ✕
-        </button>
-      </div>
 
-      {/* Chart area with spinner overlay */}
-      <div className="flex-1 w-full max-h-[400px] xl:max-h-none min-h-[300px] relative">
-        {showSpinner && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-slate-950/60 backdrop-blur-sm rounded-lg">
-            <div className="w-8 h-8 border-[3px] border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
-            <span className="text-xs text-blue-300/70 font-mono">Loading {timeframe} data...</span>
+      {/* Internal scrollable content container */}
+      <div className="flex-1 w-full p-6 flex flex-col overflow-y-auto custom-scrollbar">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-white tracking-tight">{selectedSymbol}</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-2xl font-mono text-slate-200">
+                ${liveData.lastPrice || currentPrices[currentPrices.length - 1]?.toFixed(4) || '---'}
+              </span>
+              {liveData.priceChangePercent && (
+                <span className={`text-sm font-mono ${parseFloat(liveData.priceChangePercent) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {parseFloat(liveData.priceChangePercent) >= 0 ? '+' : ''}{(parseFloat(liveData.priceChangePercent) * 100).toFixed(2)}%
+                </span>
+              )}
+            </div>
+          </div>
+          <button 
+            onClick={() => setSelectedSymbol(null)}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 text-slate-400 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Chart area with spinner overlay */}
+        <div className="flex-1 w-full max-h-[380px] min-h-[240px] xl:flex-none xl:h-[220px] xl:max-h-[220px] xl:min-h-[220px] relative shrink-0">
+          {showSpinner && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-slate-950/60 backdrop-blur-sm rounded-lg">
+              <div className="w-8 h-8 border-[2px] border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
+              <span className="text-xs text-blue-300/70 font-mono">Loading {timeframe} data...</span>
+            </div>
+          )}
+          <Line data={chartData} options={chartOptions} />
+        </div>
+
+        {/* Timeframe selector */}
+        <div className="mt-6 flex justify-between gap-1.5 border-t-[0.5px] border-white/10 pt-4 shrink-0">
+          {(['15m', '1h', '4h', '1D', '1W'] as Timeframe[]).map(tf => (
+            <button 
+              key={tf} 
+              onClick={() => handleTimeframeChange(tf)}
+              className={`flex-1 py-1.5 rounded text-xs font-semibold transition-all text-center ${
+                tf === timeframe 
+                  ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border-[0.5px] border-blue-400/40' 
+                  : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-blue-500/20 border-[0.5px] border-transparent hover:border-blue-500/40'
+              }`}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+
+        {/* Asset Specific News Section */}
+        <div className="shrink-0 mt-4 pb-2">
+          <AssetNewsCard symbol={selectedSymbol} />
+        </div>
+
+        {/* Crypto Fear & Greed Index Widget (Exclusively for BTC) */}
+        {(selectedSymbol === 'BTCUSDT' || selectedSymbol === 'BTC') && (
+          <div className="shrink-0 mt-6 border-t-[0.5px] border-white/10 pt-4 pb-6">
+            <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.9)]" />
+              Crypto Fear &amp; Greed Index
+            </h3>
+            <div className="w-full bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center overflow-hidden hover:border-amber-500/30 transition-all duration-300">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="https://alternative.me/crypto/fear-and-greed-index.png" 
+                alt="Latest Crypto Fear & Greed Index" 
+                className="w-full max-w-[340px] h-auto object-contain rounded-xl"
+                loading="lazy"
+              />
+            </div>
           </div>
         )}
-        <Line data={chartData} options={chartOptions} />
-      </div>
-
-      {/* Timeframe selector */}
-      <div className="mt-6 flex justify-between gap-2 border-t border-white/5 pt-4">
-        {(['1D', '1W', '1M', '1Y'] as Timeframe[]).map(tf => (
-          <button 
-            key={tf} 
-            onClick={() => handleTimeframeChange(tf)}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-all ${
-              tf === timeframe 
-                ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30' 
-                : 'bg-slate-800/40 text-slate-400 hover:text-slate-200 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/30'
-            }`}
-          >
-            {tf}
-          </button>
-        ))}
-      </div>
-
-      {/* Asset Specific News Section */}
-      <div className="shrink-0 mt-4">
-        <AssetNewsCard symbol={selectedSymbol} />
       </div>
     </div>
   );

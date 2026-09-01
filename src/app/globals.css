@@ -12,6 +12,28 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Hairline ultra-thin borders for sleek glassmorphic aesthetics */
+@utility border-subtle {
+  border-width: 0.5px;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+@utility border-t-subtle {
+  border-top-width: 0.5px;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+@utility border-b-subtle {
+  border-bottom-width: 0.5px;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+@utility border-l-subtle {
+  border-left-width: 0.5px;
+  border-left-color: rgba(255, 255, 255, 0.08);
+}
+@utility border-r-subtle {
+  border-right-width: 0.5px;
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -22,10 +44,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Webkit scrollbar for premium look */
+/* ─── Custom Auto-Hiding Scrollbars ──────────────────────────────────────────
+   Invisible by default; smoothly fades in with sleek blue/glass styling on hover or scroll */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -33,15 +56,54 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(79, 70, 229, 0.4);
-  border-radius: 4px;
+  background: transparent;
+  border-radius: 9999px;
+  transition: background-color 0.3s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.25);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(79, 70, 229, 0.6);
+  background: rgba(59, 130, 246, 0.6) !important;
 }
 
-/* scrollbar-hide — hides scrollbar visually without removing scroll behavior */
+/* Specific auto-hide scrollbar class for panels and containers */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.custom-scrollbar:hover {
+  scrollbar-color: rgba(59, 130, 246, 0.35) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+/* scrollbar-hide — hides scrollbar visually when explicitly required */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

@@ -166,11 +166,11 @@ const TreemapCardInner: React.FC<TreemapCardProps> = ({ ticker, width, height, d
 
   // Background and border styles depending on price change sign
   const bgClass = isPositive 
-    ? 'bg-[#14532d]/80 border-emerald-500/20 hover:bg-[#1b6136]/90 hover:border-emerald-400/40 text-emerald-100 font-sans'
-    : 'bg-[#7f1d1d]/80 border-rose-500/20 hover:bg-[#991b1b]/90 hover:border-rose-400/40 text-rose-100 font-sans';
+    ? 'bg-[#14532d]/80 border-[0.5px] border-emerald-500/30 hover:bg-[#1b6136]/90 hover:border-emerald-400/50 text-emerald-100 font-sans'
+    : 'bg-[#7f1d1d]/80 border-[0.5px] border-rose-500/30 hover:bg-[#991b1b]/90 hover:border-rose-400/50 text-rose-100 font-sans';
 
   const selectRing = isSelected 
-    ? 'ring-2 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)] z-10 scale-[0.99]' 
+    ? 'ring-1 ring-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)] z-10 scale-[0.99]' 
     : 'hover:scale-[1.01]';
 
   // Dynamic padding and text visibility based on pixel dimensions
@@ -179,17 +179,17 @@ const TreemapCardInner: React.FC<TreemapCardProps> = ({ ticker, width, height, d
   const showSmall = !showDetail && !showMedium && width >= 45 && height >= 35;
   const showMicro = !showDetail && !showMedium && !showSmall;
 
-  let paddingClass = 'p-1.5';
+  let paddingClass = 'p-1';
   if (showDetail) {
-    paddingClass = 'p-4 lg:p-5';
+    paddingClass = 'p-3 lg:p-4';
   } else if (showMedium) {
-    paddingClass = 'p-2.5';
+    paddingClass = 'p-2';
   }
 
   return (
     <div
       onClick={() => setSelectedSymbol(ticker.symbol)}
-      className={`h-full w-full rounded-xl flex flex-col justify-center border transition-all duration-300 cursor-pointer select-none ${bgClass} ${selectRing} ${paddingClass}`}
+      className={`h-full w-full rounded-lg flex flex-col justify-center border-[0.5px] transition-all duration-300 cursor-pointer select-none ${bgClass} ${selectRing} ${paddingClass}`}
     >
       {showDetail && (
         <div className="flex flex-col h-full justify-between py-1">
@@ -197,12 +197,12 @@ const TreemapCardInner: React.FC<TreemapCardProps> = ({ ticker, width, height, d
             <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold font-mono">
               {ticker.symbol}
             </span>
-            <h3 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight mt-0.5 leading-none">
+            <h3 className="text-xl lg:text-2xl font-extrabold text-white tracking-tight mt-0.5 leading-none">
               {ticker.symbol.replace('USDT', '')}
             </h3>
           </div>
-          <div className="flex flex-col gap-0.5 mt-2">
-            <span className="text-lg lg:text-xl font-bold font-mono text-white leading-tight">
+          <div className="flex flex-col gap-0.5 mt-1">
+            <span className="text-md lg:text-lg font-bold font-mono text-white leading-tight">
               ${formattedPrice}
             </span>
             <span className={`text-xs lg:text-sm font-bold font-mono flex items-center gap-0.5 ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -210,7 +210,7 @@ const TreemapCardInner: React.FC<TreemapCardProps> = ({ ticker, width, height, d
             </span>
           </div>
           {dominancePercent !== undefined && (
-            <span className="text-[10px] text-white/40 font-mono mt-auto pt-2 border-t border-white/5">
+            <span className="text-[10px] text-white/40 font-mono mt-auto pt-2 border-t-[0.5px] border-white/10">
               Dom: {dominancePercent.toFixed(2)}%
             </span>
           )}
@@ -275,7 +275,7 @@ const TreemapCard = React.memo(TreemapCardInner, (prev, next) => {
 });
 
 interface TreemapSectionProps {
-  items: (MexcTicker & { dominance: number })[];
+  items: (MexcTicker & { dominance: number; visualWeight: number })[];
   title: string;
   heightClass: string;
 }
@@ -309,7 +309,7 @@ const TreemapSectionInner: React.FC<TreemapSectionProps> = ({ items, title, heig
       0,
       width,
       height,
-      items.map(item => ({ id: item.symbol, weight: item.dominance }))
+      items.map(item => ({ id: item.symbol, weight: item.visualWeight }))
     );
   }, [items, dimensions]);
 
@@ -322,13 +322,13 @@ const TreemapSectionInner: React.FC<TreemapSectionProps> = ({ items, title, heig
   }, [rects]);
 
   return (
-    <section className="w-full flex flex-col gap-3">
+    <section className="w-full flex flex-col gap-1">
       <h3 className="text-xs uppercase tracking-widest text-slate-400 font-bold font-sans">
         {title}
       </h3>
       <div 
         ref={containerRef} 
-        className={`relative w-full rounded-2xl overflow-hidden border border-white/5 bg-blue-900/10 ${heightClass}`}
+        className={`relative w-full rounded-xl overflow-hidden border-[0.5px] border-white/10 bg-blue-900/10 ${heightClass}`}
       >
         {dimensions.width > 0 && dimensions.height > 0 && items.map(item => {
           const rect = rectsMap.get(item.symbol);
@@ -394,12 +394,15 @@ export const MarketTreemap: React.FC<MarketTreemapProps> = ({ filteredTickers, s
     return filteredTickers.slice(0, 40);
   }, [filteredTickers]);
 
-  // Compute market cap and dominance relative to top 40
+  // Compute market cap, real dominance, and mathematically normalized visual weights for balanced layout
   const top40WithDominance = useMemo(() => {
     const caps = top40Tickers.map(t => {
       const price = parseFloat(t.lastPrice);
       const supply = getSupply(t.symbol);
-      return { ticker: t, marketCap: price * supply };
+      const marketCap = Math.max(1, price * supply);
+      // Universal mathematical power compression layer (Stevens's power law for 2D visual area)
+      const visualWeight = Math.pow(marketCap, 0.35);
+      return { ticker: t, marketCap, visualWeight };
     });
 
     const totalMarketCap = caps.reduce((sum, item) => sum + item.marketCap, 0);
@@ -408,7 +411,8 @@ export const MarketTreemap: React.FC<MarketTreemapProps> = ({ filteredTickers, s
       const dominance = totalMarketCap > 0 ? (item.marketCap / totalMarketCap) * 100 : 0;
       return {
         ...item.ticker,
-        dominance
+        dominance,
+        visualWeight: item.visualWeight
       };
     });
   }, [top40Tickers]);
@@ -428,7 +432,7 @@ export const MarketTreemap: React.FC<MarketTreemapProps> = ({ filteredTickers, s
 
   if (filteredTickers.length === 0) {
     return (
-      <div className="w-full flex flex-col items-center justify-center gap-3 bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl py-20 text-slate-500">
+      <div className="w-full flex flex-col items-center justify-center gap-3 bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl py-20 text-slate-500">
         <Search className="w-10 h-10 text-slate-700" />
         <span className="text-sm font-medium">No tokens found for &quot;{searchQuery}&quot;</span>
       </div>
@@ -437,16 +441,16 @@ export const MarketTreemap: React.FC<MarketTreemapProps> = ({ filteredTickers, s
 
   // Conditional layout classes based on whether the layout is stacked
   const containerClass = isStacked
-    ? "w-full flex flex-col gap-6 h-auto"
-    : "w-full flex flex-col lg:flex-row gap-6 h-full min-h-[600px] lg:min-h-[500px] lg:overflow-hidden";
+    ? "w-full flex flex-col gap-3 h-auto"
+    : "w-full flex flex-col lg:flex-row gap-3 h-full min-h-[600px] lg:min-h-[500px] lg:overflow-hidden";
 
   const bitcoinPanelWrapperClass = isStacked
     ? "w-full shrink-0"
     : "lg:w-[42%] lg:max-w-[45%] flex flex-col";
 
   const rightColumnClass = isStacked
-    ? "w-full flex flex-col gap-6 shrink-0"
-    : "flex-1 flex flex-col gap-6";
+    ? "w-full flex flex-col gap-3 shrink-0"
+    : "flex-1 flex flex-col gap-3";
 
   return (
     <div className={containerClass}>

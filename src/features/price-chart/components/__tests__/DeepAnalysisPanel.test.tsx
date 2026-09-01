@@ -42,10 +42,11 @@ describe('DeepAnalysisPanel component', () => {
     expect(screen.getByText('BTCUSDT')).toBeInTheDocument();
     
     // Check timeframe filter buttons
+    expect(screen.getByText('15m')).toBeInTheDocument();
+    expect(screen.getByText('1h')).toBeInTheDocument();
+    expect(screen.getByText('4h')).toBeInTheDocument();
     expect(screen.getByText('1D')).toBeInTheDocument();
     expect(screen.getByText('1W')).toBeInTheDocument();
-    expect(screen.getByText('1M')).toBeInTheDocument();
-    expect(screen.getByText('1Y')).toBeInTheDocument();
     
     // Check chart component exists
     expect(screen.getByTestId('mock-line-chart')).toBeInTheDocument();
@@ -60,7 +61,7 @@ describe('DeepAnalysisPanel component', () => {
     
     const timeFrameButton = screen.getByText('1D');
     
-    // Initially selected is 1Y (default in code is '1Y')
+    // Initially selected is 4h (default in code is '4h')
     expect(timeFrameButton).not.toHaveClass('bg-blue-600/80');
 
     act(() => {

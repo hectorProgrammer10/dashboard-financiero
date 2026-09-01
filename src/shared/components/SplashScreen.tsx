@@ -17,8 +17,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   useEffect(() => {
     const hideTimer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onComplete, 250);
-    }, 1966);
+      setTimeout(onComplete, 280);
+    }, 1001);
 
     return () => clearTimeout(hideTimer);
   }, [onComplete]);
@@ -47,7 +47,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 // pathLength 0.10 makes it a short laser-like segment flying into view
                 initial={{ pathLength: 0.10, pathOffset: -0.1 }}
                 animate={{ pathOffset: 1 }}
-                transition={{ duration: 0.8, ease: "linear" }}
+                transition={{ duration: 0.3, ease: "linear" }}
               />
 
               <motion.path
@@ -59,7 +59,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 style={{ filter: 'drop-shadow(0px 0px 8px rgba(99, 102, 241, 0.6))' }}
                 initial={{ pathLength: 0.10, pathOffset: -0.1 }}
                 animate={{ pathOffset: 1 }}
-                transition={{ duration: 0.8, ease: "linear" }}
+                transition={{ duration: 0.3, ease: "linear" }}
               />
 
               <motion.path
@@ -74,8 +74,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{
                   // Starts at 0.75s — right as the laser heads reach the center
-                  pathLength: { delay: 0.75, duration: 0.5, ease: [0.43, 0.13, 0.23, 0.96] },
-                  opacity: { delay: 0.75, duration: 0.1 }
+                  pathLength: { delay: 0.2, duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] },
+                  opacity: { delay: 0.2, duration: 0.3 }
                 }}
               />
             </svg>
@@ -83,11 +83,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.3, duration: 0.5 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
               className="mt-6 flex flex-col items-center"
             >
               <h1 className="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase">
-                ApexMarket
+                ApexMarket - Financial Dashboard
               </h1>
             </motion.div>
           </div>

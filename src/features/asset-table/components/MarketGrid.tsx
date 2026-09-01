@@ -51,7 +51,7 @@ export const MarketGrid: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const debouncedQuery = useDebounce(searchInput, 150);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'table' | 'treemap'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'treemap'>('treemap');
 
   // Full filtered list (all USDT pairs with decent volume, sorted by volume)
   const allTickers = useMemo(() => {
@@ -90,7 +90,7 @@ export const MarketGrid: React.FC = () => {
   if (isLoading) {
     return (
       <div className="w-full flex justify-center items-center h-64">
-        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-[2px] border-indigo-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -112,7 +112,7 @@ export const MarketGrid: React.FC = () => {
             placeholder="Search token (e.g. BTC, ETH, SOL)..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); setCurrentPage(1); }}
-            className="w-full bg-slate-900/50 backdrop-blur-md text-white border border-white/5 rounded-xl pl-11 pr-32 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder:text-slate-500 font-mono shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
+            className="w-full bg-slate-900/50 backdrop-blur-md text-white border-[0.5px] border-white/10 rounded-xl pl-11 pr-32 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all placeholder:text-slate-500 font-mono shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
           />
           {searchInput && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
@@ -131,13 +131,13 @@ export const MarketGrid: React.FC = () => {
         </div>
 
         {/* View Toggle Button */}
-        <div className="flex bg-slate-950/40 backdrop-blur-md p-1 border border-white/5 rounded-xl gap-1 h-[46px] items-center shrink-0 animate-in fade-in-50 duration-200">
+        <div className="flex bg-slate-950/40 backdrop-blur-md p-1 border-[0.5px] border-white/10 rounded-xl gap-1 h-[46px] items-center shrink-0 animate-in fade-in-50 duration-200">
           <button
             onClick={() => setViewMode('table')}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               viewMode === 'table'
-                ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-blue-500/10 border border-transparent'
+                ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border-[0.5px] border-blue-400/40'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-blue-500/10 border-[0.5px] border-transparent'
             }`}
             title="List View"
           >
@@ -148,8 +148,8 @@ export const MarketGrid: React.FC = () => {
             onClick={() => setViewMode('treemap')}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               viewMode === 'treemap'
-                ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-blue-500/10 border border-transparent'
+                ? 'bg-blue-600/80 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] border-[0.5px] border-blue-400/40'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-blue-500/10 border-[0.5px] border-transparent'
             }`}
             title="Treemap View"
           >
@@ -162,9 +162,9 @@ export const MarketGrid: React.FC = () => {
       {viewMode === 'table' ? (
         <>
           {/* Table */}
-          <div className="w-full overflow-x-auto bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="w-full overflow-x-auto bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <table className="w-full text-left text-sm text-slate-300">
-              <thead className="text-xs uppercase bg-slate-900/60 backdrop-blur-md text-slate-400 border-b border-white/5 sticky top-0 z-10">
+              <thead className="text-xs uppercase bg-slate-900/60 backdrop-blur-md text-slate-400 border-b-[0.5px] border-white/10 sticky top-0 z-10">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-semibold">#</th>
                   <th scope="col" className="px-6 py-4 font-semibold">Asset</th>
@@ -195,13 +195,13 @@ export const MarketGrid: React.FC = () => {
                       <tr 
                         key={ticker.symbol} 
                         onClick={() => setSelectedSymbol(ticker.symbol)}
-                        className={`border-b border-white/5 hover:bg-blue-500/10 transition-colors cursor-pointer group ${isSelected ? 'bg-blue-600/20 shadow-[inset_0_0_20px_rgba(37,99,235,0.15)] border-l-2 border-l-blue-500' : ''}`}
+                        className={`border-b-[0.5px] border-white/[0.06] hover:bg-blue-500/10 transition-colors cursor-pointer group ${isSelected ? 'bg-blue-600/20 shadow-[inset_0_0_20px_rgba(37,99,235,0.15)] border-l-[2px] border-l-blue-400' : ''}`}
                       >
                         <td className="px-6 py-4 font-medium text-slate-500">
                           {rankOffset + index + 1}
                         </td>
                         <td className="px-6 py-4 text-white font-bold tracking-wide flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center text-[10px] text-slate-300 font-mono ring-1 ring-white/10 shrink-0 shadow-inner">
+                          <div className="w-6 h-6 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center text-[10px] text-slate-300 font-mono ring-[0.5px] ring-white/20 shrink-0 shadow-inner">
                             {ticker.symbol.charAt(0)}
                           </div>
                           {ticker.symbol.replace('USDT', '')} <span className="text-slate-600 font-normal text-xs ml-1">{ticker.symbol}</span>
@@ -237,7 +237,7 @@ export const MarketGrid: React.FC = () => {
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={safeCurrentPage === 1}
-                  className="p-2 rounded-lg bg-slate-900/50 backdrop-blur-md border border-white/5 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-2 rounded-lg bg-slate-900/50 backdrop-blur-md border-[0.5px] border-white/10 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -258,8 +258,8 @@ export const MarketGrid: React.FC = () => {
                         onClick={() => setCurrentPage(item)}
                         className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${
                           item === safeCurrentPage
-                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] border border-blue-400/50'
-                            : 'bg-slate-900/50 backdrop-blur-md border border-white/5 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30'
+                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)] border-[0.5px] border-blue-400/50'
+                            : 'bg-slate-900/50 backdrop-blur-md border-[0.5px] border-white/10 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30'
                         }`}
                       >
                         {item}
@@ -270,7 +270,7 @@ export const MarketGrid: React.FC = () => {
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={safeCurrentPage === totalPages}
-                  className="p-2 rounded-lg bg-slate-900/50 backdrop-blur-md border border-white/5 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-2 rounded-lg bg-slate-900/50 backdrop-blur-md border-[0.5px] border-white/10 text-slate-400 hover:text-white hover:bg-blue-500/20 hover:border-blue-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
