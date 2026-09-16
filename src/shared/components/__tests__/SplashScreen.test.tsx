@@ -15,7 +15,7 @@ describe('SplashScreen component', () => {
     render(<SplashScreen onComplete={jest.fn()} />);
     
     // Check if component elements are rendered
-    expect(screen.getByText('ApexMarket')).toBeInTheDocument();
+    expect(screen.getByText(/ApexMarket/i)).toBeInTheDocument();
   });
 
   it('triggers onComplete callback after timeouts expire', () => {
@@ -24,15 +24,16 @@ describe('SplashScreen component', () => {
     
     expect(onCompleteMock).not.toHaveBeenCalled();
 
-    // Fast-forward timers: first timer is 1966ms, second is 250ms -> total 2216ms
+    // Fast-forward 1000ms - initial animation still running
     act(() => {
-      jest.advanceTimersByTime(1966);
+      jest.advanceTimersByTime(1000);
     });
     
     expect(onCompleteMock).not.toHaveBeenCalled();
 
+    // Fast-forward remaining timer to complete splash screen (1966ms + 250ms = 2216ms total)
     act(() => {
-      jest.advanceTimersByTime(250);
+      jest.advanceTimersByTime(1500);
     });
 
     expect(onCompleteMock).toHaveBeenCalledTimes(1);

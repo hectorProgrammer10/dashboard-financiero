@@ -20,17 +20,17 @@ export default function Home() {
     <>
     {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
     <div className="h-screen max-h-screen bg-[#030712] text-slate-200 selection:bg-blue-500/30 overflow-hidden flex flex-col font-sans">
-      {/* Background Decor - Blue Glassmorphism Orbs */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[150px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-cyan-500/15 blur-[150px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-[5%] right-[15%] w-[25%] h-[25%] bg-blue-600/15 blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed top-[20%] right-[20%] w-[30%] h-[30%] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
+      {/* Background Decor - High-Performance Gradient Orbs (No CPU-bound Gaussian blurs) */}
+      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[radial-gradient(circle,_rgba(37,99,235,0.18)_0%,_rgba(37,99,235,0)_70%)] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-[radial-gradient(circle,_rgba(6,182,212,0.15)_0%,_rgba(6,182,212,0)_70%)] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[5%] right-[15%] w-[25%] h-[25%] bg-[radial-gradient(circle,_rgba(37,99,235,0.15)_0%,_rgba(37,99,235,0)_70%)] rounded-full pointer-events-none" />
+      <div className="fixed top-[20%] right-[20%] w-[30%] h-[30%] bg-[radial-gradient(circle,_rgba(99,102,241,0.10)_0%,_rgba(99,102,241,0)_70%)] rounded-full pointer-events-none" />
 
       {/* Header */}
-      <header className="px-6 py-5 border-b-[0.5px] border-white/10 bg-slate-950/50 backdrop-blur-xl relative z-10 shrink-0">
+      <header className="px-6 py-5 border-b-[0.5px] border-white/10 bg-slate-950/80 backdrop-blur-md relative z-10 shrink-0">
         <div className="max-w-[1920px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center border-[0.5px] border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.1)] backdrop-blur-md overflow-hidden">
+            <div className="relative w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center border-[0.5px] border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.1)] backdrop-blur-sm overflow-hidden">
               <Image id='logo' src="/logoapex.svg" alt="Logo" width={48} height={48} className="object-contain p-1.5 relative z-0 opacity-80" />
               
               {!showSplash && (

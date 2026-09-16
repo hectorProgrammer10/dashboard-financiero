@@ -46,7 +46,7 @@ export const NewsCarousel: React.FC = () => {
 
   if (isLoading || topArticles.length === 0) {
     return (
-      <div className="w-full bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl min-h-[200px] flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+      <div className="w-full bg-slate-900/80 backdrop-blur-sm border-[0.5px] border-white/10 rounded-2xl min-h-[200px] flex items-center justify-center relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent animate-[shimmer_2s_infinite] -translate-x-[100%]" 
              style={{ 
                backgroundImage: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.1), transparent)' 
@@ -67,12 +67,12 @@ export const NewsCarousel: React.FC = () => {
 
   return (
     <div 
-      className="w-full bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl overflow-hidden relative group shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+      className="w-full bg-slate-900/80 backdrop-blur-sm border-[0.5px] border-white/10 rounded-2xl overflow-hidden relative group shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Header Tag */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-1.5 rounded-full border-[0.5px] border-white/20 shadow-lg">
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-slate-950/85 backdrop-blur-sm px-3 py-1.5 rounded-full border-[0.5px] border-white/20 shadow-lg">
         <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shadow-[0_0_12px_rgba(59,130,246,0.8)]"></span>
         <span className="text-xs font-bold text-white tracking-widest uppercase font-mono">Market Intel</span>
       </div>

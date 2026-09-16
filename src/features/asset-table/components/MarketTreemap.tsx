@@ -432,7 +432,7 @@ export const MarketTreemap: React.FC<MarketTreemapProps> = ({ filteredTickers, s
 
   if (filteredTickers.length === 0) {
     return (
-      <div className="w-full flex flex-col items-center justify-center gap-3 bg-slate-900/40 backdrop-blur-xl border-[0.5px] border-white/10 rounded-2xl py-20 text-slate-500">
+      <div className="w-full flex flex-col items-center justify-center gap-3 bg-slate-900/80 backdrop-blur-sm border-[0.5px] border-white/10 rounded-2xl py-20 text-slate-500">
         <Search className="w-10 h-10 text-slate-700" />
         <span className="text-sm font-medium">No tokens found for &quot;{searchQuery}&quot;</span>
       </div>

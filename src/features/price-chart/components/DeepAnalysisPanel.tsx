@@ -218,7 +218,7 @@ export const DeepAnalysisPanel: React.FC = () => {
 
   return (
     <div 
-      className="w-full shrink-0 bg-slate-900/40 backdrop-blur-2xl border-l-[0.5px] border-white/10 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full max-h-full absolute right-0 top-0 z-20 xl:relative xl:right-auto xl:top-auto animate-in slide-in-from-right-8 duration-300"
+      className="w-full shrink-0 bg-slate-900/90 backdrop-blur-sm border-l-[0.5px] border-white/10 flex flex-col shadow-[0_0_40px_rgba(0,0,0,0.5)] h-full max-h-full absolute right-0 top-0 z-20 xl:relative xl:right-auto xl:top-auto animate-in slide-in-from-right-8 duration-300"
       style={isXl ? { width: `${width}px` } : undefined}
     >
       {/* Resizable handle - stays pinned across 100% of the visible container height regardless of scroll */}
